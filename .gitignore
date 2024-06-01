@@ -1,0 +1,14 @@
+__pycache__
+.DS_Store
+config.py
+credentials.py
+news/news_data.db
+chart/indicators.py
+session_name.session
+indicators.db
+youtube/credentials.py
+youtube/__pycache__/
+cache/
+chart/charts/*.png
+news/credentials.py
+chart/credentials.py
