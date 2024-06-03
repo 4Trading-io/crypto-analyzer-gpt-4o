@@ -63,7 +63,11 @@ This project is a comprehensive tool for fetching, analyzing, and visualizing cr
     import nltk
     nltk.download('punkt')
     ```
-4. Create a file in name of credentials.py: 
+4. Install OpenCV on Ubuntu Server:
+    ```bach
+    apt install -y libopencv-dev python3-opencv
+    ```
+5. Create a file in name of credentials.py and put it under chart/ , news/ , youtube/ and chart/photo_download: 
     ```
     # Binance API Key
     binance_api_key = ""

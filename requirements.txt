@@ -32,3 +32,4 @@ torchaudio==2.3.0
 torchvision==0.18.0
 tensorflow==2.16.1
 sympy==1.12.1
+nltk
