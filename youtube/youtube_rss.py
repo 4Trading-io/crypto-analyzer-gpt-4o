@@ -96,7 +96,7 @@ def test():
               Title: {video.title}
               Link: {video.link}
               """)
-    thread = YoutubeFeedParser("UCGWSVnCaJOiKlOSpK8SSqbg").check_always(on_new_video)
+    thread = YoutubeFeedParser().check_always(on_new_video)
     thread.join()
 
 def test_async():
@@ -108,7 +108,7 @@ def test_async():
               """)
         
     async def main():
-        fp = YoutubeFeedParser("UCGWSVnCaJOiKlOSpK8SSqbg")
+        fp = YoutubeFeedParser()
         await asyncio.gather(fp.check_always_async(on_new_video))
         
     asyncio.run(main())
