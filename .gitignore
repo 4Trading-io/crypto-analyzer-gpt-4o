@@ -12,3 +12,5 @@ cache/
 chart/charts/*.png
 news/credentials.py
 chart/credentials.py
+youtube/cache/
+youtube/downloads/
