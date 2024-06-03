@@ -102,7 +102,7 @@ This project is a comprehensive tool for fetching, analyzing, and visualizing cr
 2. Run download_and_analyze.py in youtube folder for youtube summarization
 2. Run the main script:
     ```bash
-    cd Analyzer_Bot_GPT-4o/chart
+    cd crypto-analyzer-gpt-4o/chart
     python main.py
 
     cd ../news
