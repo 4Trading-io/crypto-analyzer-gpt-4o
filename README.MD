@@ -65,7 +65,7 @@ This project is a comprehensive tool for fetching, analyzing, and visualizing cr
     ```
 4. Install OpenCV on Ubuntu Server:
     ```bach
-    apt install -y libopencv-dev python3-opencv
+    apt install -y libopencv-dev python3-opencv ffmpeg
     ```
 5. Create a file in name of credentials.py and put it under chart/ , news/ , youtube/ and chart/photo_download: 
     ```

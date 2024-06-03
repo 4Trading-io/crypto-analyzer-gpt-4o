@@ -9,7 +9,7 @@ import cv2
 import base64
 from datetime import datetime
 from openai import OpenAI
-from credentials import telegram_bot_token_btc, telegram_channel_id, openai_api_key, arzineh_channel_id, altcoin_daily_channel_id, crypto_banter_channel_id
+from credentials import telegram_bot_token_btc, telegram_channel_id, openai_api_key, arzineh_channel_id, altcoin_daily_channel_id, crypto_rover_channel_id, glassnode_channel_id, crypto_bureau_channel_id
 from youtube_rss import YoutubeFeedParser
 
 telegram_token = telegram_bot_token_btc
@@ -160,7 +160,9 @@ async def main():
     channel_ids = [
         arzineh_channel_id,
         altcoin_daily_channel_id,
-        crypto_banter_channel_id
+        crypto_rover_channel_id,
+        crypto_bureau_channel_id,
+        glassnode_channel_id
     ] 
 
     feeds = [ YoutubeFeedParser(channel_id) for channel_id in channel_ids ]
