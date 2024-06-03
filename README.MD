@@ -63,7 +63,7 @@ This project is a comprehensive tool for fetching, analyzing, and visualizing cr
     import nltk
     nltk.download('punkt')
     ```
-4. Install OpenCV on Ubuntu Server:
+4. Install Dependencies on Ubuntu Server:
     ```bach
     apt install -y libopencv-dev python3-opencv python3-opencv-headless ffmpeg
     ```
