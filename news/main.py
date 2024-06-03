@@ -17,8 +17,8 @@ def job():
     fetch_and_send_latest_analysis()
 
 def start_fetch_news_scheduler():
-    schedule.every(1).days.at("05:30:00", "UTC").do(job)
-    schedule.every(1).days.at("17:30:00", "UTC").do(job)
+    schedule.every(1).days.at("05:19:00", "UTC").do(job)
+    schedule.every(1).days.at("17:19:00", "UTC").do(job)
     while True:
         schedule.run_pending()
         time.sleep(10)
