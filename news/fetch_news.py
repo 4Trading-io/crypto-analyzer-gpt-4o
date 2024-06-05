@@ -11,6 +11,8 @@ import schedule
 import time
 import warnings
 from credentials import newsapi_api_key, cryptopanic_api_key
+import time 
+from datetime import datetime, timedelta, timezone
 
 # Suppress specific FutureWarning
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -46,7 +48,8 @@ CRYPTOPANIC_API_KEY = cryptopanic_api_key
 def fetch_news_from_newsapi():
     try:
         logging.info("Fetching news from NewsAPI")
-        url = f'https://newsapi.org/v2/everything?q=cryptocurrency&apiKey={NEWS_API_KEY}'
+        last_12_hours = (datetime.utcnow() - timedelta(hours=13)).isoformat() + 'Z'  # Adding 'Z' to indicate UTC time
+        url = f'https://newsapi.org/v2/everything?q=cryptocurrency&from={last_12_hours}&apiKey={NEWS_API_KEY}'
         response = requests.get(url)
         response.raise_for_status()
         articles = response.json().get('articles', [])
@@ -61,7 +64,7 @@ def fetch_news_from_newsapi():
     except Exception as e:
         logging.error(f"Error fetching news from NewsAPI: {e}")
         return []
-
+    
 def fetch_news_from_cryptopanic():
     try:
         logging.info("Fetching news from CryptoPanic")
@@ -70,13 +73,16 @@ def fetch_news_from_cryptopanic():
         response.raise_for_status()
         articles = response.json().get('results', [])
         logging.info(f"Fetched {len(articles)} articles from CryptoPanic")
+        last_12_hours = datetime.now(timezone.utc) - timedelta(hours=13)  # Make it timezone-aware
+        recent_articles = [article for article in articles if datetime.fromisoformat(article['created_at']).astimezone(timezone.utc) > last_12_hours]
+        logging.info(f"Filtered {len(recent_articles)} articles from the last 12 hours")
         return [{
             'title': article['title'],
             'published_at': article['created_at'],
             'url': article['url'],
             'source': article['source']['title'],
             'content': article.get('body')
-        } for article in articles]
+        } for article in recent_articles]
     except Exception as e:
         logging.error(f"Error fetching news from CryptoPanic: {e}")
         return []
