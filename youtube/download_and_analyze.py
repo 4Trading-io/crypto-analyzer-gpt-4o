@@ -123,7 +123,7 @@ async def send_audio_to_whisper_and_summarize(author, audio_path, video_frames, 
         response = client.chat.completions.create(
             model=MODEL,
             messages=[
-                {"role": "system", "content": " شما در حال تولید خلاصه‌ای از یک ویدیو تحلیل تکنیکال یا بررسی کریپتو و اخبار آن هستید. تولید کننده ویدیو یک متخصص بازار کریپتو است.ویدیو را خلاصه کنید خلاصه را به فارسی بنویسید و نکات مهم را برجسته کنید و از دیدن کل ویدیو مارا بی نیاز کنید."},
+                {"role": "system", "content": " شما در حال تولید خلاصه‌ای از یک ویدیو تحلیل تکنیکال یا بررسی کریپتو و اخبار آن هستید. تولید کننده ویدیو یک متخصص بازار کریپتو است.ویدیو را کمی خلاصه کنید خلاصه را به فارسی بنویسید و نکات مهم را برجسته کنید و از دیدن کل ویدیو مارا بی نیاز کنید و تاجای ممکن تمامی نکات و قیمت هارا بگو و همجنین بگو که چه فایده‌ای برای ما خواهد داشت این ویدیو."},
                 {"role": "user", "content": [
                     "این‌ها فریم‌های ویدیو هستند.",
                     *map(lambda x: {"type": "image_url", "image_url": {"url": f'data:image/jpg;base64,{x}', "detail": "low"}}, video_frames),
@@ -159,12 +159,12 @@ async def on_new_video(video):
 async def main():
     channel_ids = [
         arzineh_channel_id,
-        altcoin_daily_channel_id,
-        crypto_rover_channel_id,
-        crypto_bureau_channel_id,
-        glassnode_channel_id,
-        michael_wrubel_channel_id,
-        crypto_jebb_channel_id
+        # altcoin_daily_channel_id,
+        # crypto_rover_channel_id,
+        # crypto_bureau_channel_id,
+        # glassnode_channel_id,
+        # michael_wrubel_channel_id,
+        # crypto_jebb_channel_id
     ] 
 
     feeds = [ YoutubeFeedParser(channel_id) for channel_id in channel_ids ]
