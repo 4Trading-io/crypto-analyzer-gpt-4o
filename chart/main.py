@@ -39,11 +39,11 @@ def schedule_tasks(symbols, precisions, intervals):
                     schedule.every(1).days.at("18:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
                     # schedule.every(1).days.at("20:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
                 elif interval == '4h':
-                    schedule.every(1).days.at("00:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
-                    schedule.every(1).days.at("08:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
-                    schedule.every(1).days.at("16:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
+                    schedule.every(1).days.at("05:30:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
+                    schedule.every(1).days.at("14:30:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
+                    # schedule.every(1).days.at("16:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
                 elif interval == '1d':
-                    schedule.every(3).days.at("00:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
+                    schedule.every(2).days.at("06:30:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
     except Exception as e:
         logging.error(f"Error scheduling periodic tasks: {e}", exc_info=True)
 
