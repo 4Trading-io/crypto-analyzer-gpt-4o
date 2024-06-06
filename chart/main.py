@@ -34,11 +34,10 @@ def schedule_tasks(symbols, precisions, intervals):
                 logging.debug(f"Scheduling {interval} interval tasks for {symbol}")
                 if interval == '15m':
                     schedule.every(1).days.at("00:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
-                    schedule.every(1).days.at("04:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
-                    schedule.every(1).days.at("08:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
+                    schedule.every(1).days.at("06:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
                     schedule.every(1).days.at("12:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
-                    schedule.every(1).days.at("16:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
-                    schedule.every(1).days.at("20:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
+                    schedule.every(1).days.at("18:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
+                    # schedule.every(1).days.at("20:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
                 elif interval == '4h':
                     schedule.every(1).days.at("00:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
                     schedule.every(1).days.at("08:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
