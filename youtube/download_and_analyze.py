@@ -84,12 +84,23 @@ def process_video(video_path, max_frames=100):
 async def send_message_to_telegram_channel(message, channel_id, reply_to_message_id=None):
     try:
         logger.info(f"Attempting to send message to Telegram channel {channel_id}")
-        try:
-            sent_message = await bot.send_message(chat_id=channel_id, text=message, reply_to_message_id=reply_to_message_id, parse_mode='Markdown')
-        except:
-            sent_message = await bot.send_message(chat_id=channel_id, text=message, reply_to_message_id=reply_to_message_id)
+        message_chunks = [message[i:i+4096] for i in range(0, len(message), 4096)]
+        
+        first_message_id = None
+        for chunk in message_chunks:
+            try:
+                sent_message = await bot.send_message(chat_id=channel_id, text=chunk, reply_to_message_id=reply_to_message_id, parse_mode='Markdown')
+            except:
+                sent_message = await bot.send_message(chat_id=channel_id, text=chunk, reply_to_message_id=reply_to_message_id)
+            
+            if first_message_id is None:
+                first_message_id = sent_message.message_id
+            
+            # Set reply_to_message_id to the ID of the last sent message to chain the messages
+            reply_to_message_id = sent_message.message_id
+        
         logger.info(f"Message sent to Telegram channel {channel_id}")
-        return sent_message.message_id
+        return first_message_id
     except Exception as e:
         logger.error(f"Error sending message to Telegram: {e}", exc_info=True)
     return None
@@ -103,7 +114,7 @@ async def send_audio_to_whisper_and_summarize(author, audio_path, video_frames, 
                 model="whisper-1",
                 file=audio_file,
             )
-        logger.info(f"Transcription object: {transcription}")
+        logger.info(f"Transcription object: {transcription}a")
         transcription_text = transcription.text
         logger.info(f"Transcription: {transcription_text}")
 
@@ -159,12 +170,12 @@ async def on_new_video(video):
 async def main():
     channel_ids = [
         arzineh_channel_id,
-        altcoin_daily_channel_id,
-        crypto_rover_channel_id,
-        crypto_bureau_channel_id,
-        glassnode_channel_id,
-        michael_wrubel_channel_id,
-        crypto_jebb_channel_id
+        # altcoin_daily_channel_id,
+        # crypto_rover_channel_id,
+        # crypto_bureau_channel_id,
+        # glassnode_channel_id,
+        # michael_wrubel_channel_id,
+        # crypto_jebb_channel_id
     ] 
 
     feeds = [ YoutubeFeedParser(channel_id) for channel_id in channel_ids ]
