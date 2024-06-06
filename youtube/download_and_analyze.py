@@ -170,12 +170,12 @@ async def on_new_video(video):
 async def main():
     channel_ids = [
         arzineh_channel_id,
-        # altcoin_daily_channel_id,
-        # crypto_rover_channel_id,
-        # crypto_bureau_channel_id,
-        # glassnode_channel_id,
-        # michael_wrubel_channel_id,
-        # crypto_jebb_channel_id
+        altcoin_daily_channel_id,
+        crypto_rover_channel_id,
+        crypto_bureau_channel_id,
+        glassnode_channel_id,
+        michael_wrubel_channel_id,
+        crypto_jebb_channel_id
     ] 
 
     feeds = [ YoutubeFeedParser(channel_id) for channel_id in channel_ids ]
