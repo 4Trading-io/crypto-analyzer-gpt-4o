@@ -14,3 +14,9 @@ news/credentials.py
 chart/credentials.py
 youtube/cache/
 youtube/downloads/
+GFX/charts/*.png
+GFX/charts
+GFX/chart/indicators.db
+GFX/credentials.py
+GFX
+
