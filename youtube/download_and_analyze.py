@@ -1,16 +1,31 @@
 import logging
 import asyncio
-from threading import Thread
-from typing import Callable
-from aiogram import Dispatcher, Bot
 import os
 import subprocess
 import cv2
 import base64
 from datetime import datetime
 from openai import OpenAI
-from credentials import telegram_bot_token_btc, telegram_channel_id, openai_api_key, arzineh_channel_id, altcoin_daily_channel_id, crypto_rover_channel_id, glassnode_channel_id, crypto_bureau_channel_id, crypto_jebb_channel_id, michael_wrubel_channel_id, arzineh_plus_channel_id, more_crypto_online_channel_id, bitboy_channel_id, bitcoin999_channel_id, cryptorus_channel_id, ivan_on_tech_channel_id
+from aiogram import Dispatcher, Bot
 from youtube_rss import YoutubeFeedParser
+from credentials import (
+    telegram_bot_token_btc,
+    telegram_channel_id,
+    openai_api_key,
+    arzineh_channel_id,
+    altcoin_daily_channel_id,
+    crypto_rover_channel_id,
+    glassnode_channel_id,
+    crypto_bureau_channel_id,
+    crypto_jebb_channel_id,
+    michael_wrubel_channel_id,
+    arzineh_plus_channel_id,
+    more_crypto_online_channel_id,
+    bitboy_channel_id,
+    bitcoin999_channel_id,
+    cryptorus_channel_id,
+    ivan_on_tech_channel_id
+)
 
 telegram_token = telegram_bot_token_btc
 channel_id = telegram_channel_id
@@ -34,17 +49,17 @@ def download_video_and_extract_audio(video_url, output_dir='downloads'):
     current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
     video_output_path = os.path.join(output_dir, f'video_{current_time}.mp4')
     audio_output_path = os.path.join(output_dir, f'audio_{current_time}.mp3')
-    
+
     # Download video in the lowest quality
     video_command = ['yt-dlp', '-f', 'worst', '-o', video_output_path, '--verbose', video_url]
     subprocess.run(video_command, check=True)
     logger.info(f"Video downloaded to {video_output_path} in the lowest quality available.")
-    
+
     # Extract audio as MP3
     audio_command = ['yt-dlp', '-x', '--audio-format', 'mp3', '-o', audio_output_path, '--verbose', video_url]
     subprocess.run(audio_command, check=True)
     logger.info(f"Audio extracted to {audio_output_path}.")
-    
+
     return video_output_path, audio_output_path
 
 # Function to process video and extract frames
@@ -70,7 +85,7 @@ def process_video(video_path, max_frames=100):
             _, buffer = cv2.imencode(".jpg", frame)
             base64Frames.append(base64.b64encode(buffer).decode("utf-8"))
             curr_frame += frames_to_skip
-        
+
         video.release()
         logger.info(f"Extracted {len(base64Frames)} frames from the video")
 
@@ -85,20 +100,20 @@ async def send_message_to_telegram_channel(message, channel_id, reply_to_message
     try:
         logger.info(f"Attempting to send message to Telegram channel {channel_id}")
         message_chunks = [message[i:i+4096] for i in range(0, len(message), 4096)]
-        
+
         first_message_id = None
         for chunk in message_chunks:
             try:
                 sent_message = await bot.send_message(chat_id=channel_id, text=chunk, reply_to_message_id=reply_to_message_id, parse_mode='Markdown')
             except:
                 sent_message = await bot.send_message(chat_id=channel_id, text=chunk, reply_to_message_id=reply_to_message_id)
-            
+
             if first_message_id is None:
                 first_message_id = sent_message.message_id
-            
+
             # Set reply_to_message_id to the ID of the last sent message to chain the messages
             reply_to_message_id = sent_message.message_id
-        
+
         logger.info(f"Message sent to Telegram channel {channel_id}")
         return first_message_id
     except Exception as e:
@@ -162,7 +177,7 @@ async def on_new_video(video):
     logger.info(f"New Video Received: {video.title} - {video_url}")
     video_path, audio_path = download_video_and_extract_audio(video_url)
     video_frames = process_video(video_path)
-    
+
     # Send the audio to Whisper for transcription and summarization
     await send_audio_to_whisper_and_summarize(author, audio_path, video_frames, video_url)
 
@@ -182,12 +197,11 @@ async def main():
         bitcoin999_channel_id,
         cryptorus_channel_id,
         ivan_on_tech_channel_id
-    ] 
+    ]
 
     feeds = [ YoutubeFeedParser(channel_id) for channel_id in channel_ids ]
     tasks = [ fp.check_always_async(on_new_video) for fp in feeds ]
     await asyncio.gather(*tasks)
 
 if __name__ == "__main__":
-    # telegram_client.loop.run_until_complete(main())
     asyncio.run(main())
