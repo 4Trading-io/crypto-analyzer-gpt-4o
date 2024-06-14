@@ -9,7 +9,7 @@ from openai import OpenAI
 from aiogram import Dispatcher, Bot
 from youtube_rss import YoutubeFeedParser
 from credentials import (
-    telegram_bot_token_btc,
+    telegram_youtube_bot_token,
     telegram_channel_id,
     openai_api_key,
     arzineh_channel_id,
@@ -27,7 +27,7 @@ from credentials import (
     ivan_on_tech_channel_id
 )
 
-telegram_token = telegram_bot_token_btc
+telegram_token = telegram_youtube_bot_token
 channel_id = telegram_channel_id
 bot = Bot(token=telegram_token)
 dp = Dispatcher()
