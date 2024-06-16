@@ -33,17 +33,17 @@ def schedule_tasks(symbols, precisions, intervals):
             for symbol, precision in zip(symbols, precisions):
                 logging.debug(f"Scheduling {interval} interval tasks for {symbol}")
                 if interval == '15m':
-                    schedule.every(1).days.at("05:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
-                    schedule.every(1).days.at("11:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
-                    schedule.every(1).days.at("16:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
-                    schedule.every(1).days.at("23:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
+                    schedule.every(1).days.at("04:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
+                    schedule.every(1).days.at("18:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
+                    # schedule.every(1).days.at("16:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
+                    # schedule.every(1).days.at("23:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
                     # schedule.every(1).days.at("20:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
                 elif interval == '4h':
-                    schedule.every(1).days.at("05:30:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
-                    schedule.every(1).days.at("14:30:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
+                    schedule.every(1).days.at("12:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
+                    # schedule.every(1).days.at("14:30:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
                     # schedule.every(1).days.at("16:00:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
                 elif interval == '1d':
-                    schedule.every(2).days.at("06:30:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
+                    schedule.every(2).days.at("16:30:00", 'UTC').do(analyze_and_update, symbol=symbol, precision=precision, interval=interval)
     except Exception as e:
         logging.error(f"Error scheduling periodic tasks: {e}", exc_info=True)
 
