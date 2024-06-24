@@ -5,6 +5,7 @@ import subprocess
 import cv2
 import base64
 from datetime import datetime
+from yt_dlp import YoutubeDL
 from openai import OpenAI
 from aiogram import Dispatcher, Bot
 from youtube_rss import YoutubeFeedParser
@@ -50,15 +51,32 @@ def download_video_and_extract_audio(video_url, output_dir='downloads'):
     video_output_path = os.path.join(output_dir, f'video_{current_time}.mp4')
     audio_output_path = os.path.join(output_dir, f'audio_{current_time}.mp3')
 
-    # Download video in the lowest quality
-    video_command = ['yt-dlp', '-f', 'worst', '-o', video_output_path, '--verbose', video_url]
-    subprocess.run(video_command, check=True)
-    logger.info(f"Video downloaded to {video_output_path} in the lowest quality available.")
+    # Check if the video is live and not yet started
+    ydl_opts = {
+        'format': 'worst',
+        'outtmpl': video_output_path,
+        'quiet': True,
+    }
 
-    # Extract audio as MP3
-    audio_command = ['yt-dlp', '-x', '--audio-format', 'mp3', '-o', audio_output_path, '--verbose', video_url]
-    subprocess.run(audio_command, check=True)
-    logger.info(f"Audio extracted to {audio_output_path}.")
+    try:
+        with YoutubeDL(ydl_opts) as ydl:
+            info_dict = ydl.extract_info(video_url, download=False)
+            if info_dict.get('is_live') and not info_dict.get('was_live'):
+                logger.info(f"Live event '{info_dict.get('title')}' has not started yet. Skipping download.")
+                return None, None
+
+            # Download video in the lowest quality
+            ydl.download([video_url])
+            logger.info(f"Video downloaded to {video_output_path} in the lowest quality available.")
+
+            # Extract audio as MP3
+            audio_command = ['yt-dlp', '-x', '--audio-format', 'mp3', '-o', audio_output_path, '--verbose', video_url]
+            subprocess.run(audio_command, check=True)
+            logger.info(f"Audio extracted to {audio_output_path}.")
+
+    except Exception as e:
+        logger.error(f"Error downloading video: {e}")
+        return None, None
 
     return video_output_path, audio_output_path
 
@@ -123,6 +141,10 @@ async def send_message_to_telegram_channel(message, channel_id, reply_to_message
 # Function to send audio to Whisper for transcription and then summarize
 async def send_audio_to_whisper_and_summarize(author, audio_path, video_frames, video_url, reply_to_message_id=None):
     try:
+        if not audio_path:
+            logger.warning(f"Audio path is None, skipping transcription and summarization.")
+            return
+
         # Transcribe the audio
         with open(audio_path, "rb") as audio_file:
             transcription = client.audio.transcriptions.create(
@@ -137,7 +159,7 @@ async def send_audio_to_whisper_and_summarize(author, audio_path, video_frames, 
         response = client.chat.completions.create(
             model=MODEL,
             messages=[
-                {"role": "system", "content": "شما یک خلاصه برای یک ویدیو تحلیل تکنیکال یا تحلیل فاندامنتال کریپتو است تولید می‌کنید. خلاصه را به فارسی بنویسید و نکات مهم را برجسته کنید."},
+                {"role": "system", "content": "شما یک خلاصه برای یک ویدیو تحلیل تکنیکال یا تحلیل فاندامنتال فارکس است تولید می‌کنید. خلاصه را به فارسی بنویسید و نکات مهم را برجسته کنید."},
                 {"role": "user", "content": f"رونویسی صوتی این است: {transcription_text}"}
             ],
             temperature=0,
@@ -149,7 +171,7 @@ async def send_audio_to_whisper_and_summarize(author, audio_path, video_frames, 
         response = client.chat.completions.create(
             model=MODEL,
             messages=[
-                {"role": "system", "content": " شما در حال تولید خلاصه‌ای از یک ویدیو تحلیل تکنیکال یا بررسی کریپتو و اخبار آن هستید. تولید کننده ویدیو یک متخصص بازار کریپتو است.ویدیو را کمی خلاصه کنید خلاصه را به فارسی بنویسید و نکات مهم را برجسته کنید و از دیدن کل ویدیو مارا بی نیاز کنید و تاجای ممکن تمامی نکات و قیمت هارا بگو و همجنین بگو که چه فایده‌ای برای ما خواهد داشت این ویدیو."},
+                {"role": "system", "content": " شما در حال تولید خلاصه‌ای از یک ویدیو تحلیل تکنیکال یا بررسی بازار فارکس و طا و اخبار آن هستید. تولید کننده ویدیو یک متخصص بازار فارکس است.ویدیو را کمی خلاصه کنید خلاصه را به فارسی بنویسید و نکات مهم را برجسته کنید و از دیدن کل ویدیو مارا بی نیاز کنید و تاجای ممکن تمامی نکات و قیمت هارا بگو و همجنین بگو که چه فایده‌ای برای ما خواهد داشت این ویدیو."},
                 {"role": "user", "content": [
                     "این‌ها فریم‌های ویدیو هستند.",
                     *map(lambda x: {"type": "image_url", "image_url": {"url": f'data:image/jpg;base64,{x}', "detail": "low"}}, video_frames),
@@ -176,10 +198,11 @@ async def on_new_video(video):
     author = video.author
     logger.info(f"New Video Received: {video.title} - {video_url}")
     video_path, audio_path = download_video_and_extract_audio(video_url)
-    video_frames = process_video(video_path)
+    if video_path and audio_path:
+        video_frames = process_video(video_path)
 
-    # Send the audio to Whisper for transcription and summarization
-    await send_audio_to_whisper_and_summarize(author, audio_path, video_frames, video_url)
+        # Send the audio to Whisper for transcription and summarization
+        await send_audio_to_whisper_and_summarize(author, audio_path, video_frames, video_url)
 
 # Main function to start the RSS feed parser and monitor for new videos
 async def main():
